@@ -185,11 +185,21 @@ Description: empty package to prepare a machine as OpenNebula Node
 
 Package: opennebula-node-lxd
 Architecture: any
-Depends: opennebula-node (= ${source:Version}),
+Depends: opennebula-common (= ${source:Version}),
          kpartx,
          libvncserver1,
          e2fsprogs,
-         xfsprogs
+         xfsprogs,
+         qemu-utils,
+         adduser,
+         ruby,
+         vlan,
+         ipset,
+         pciutils,
+         rsync,
+         cron,
+         ruby-sqlite3,
+         ${misc:Depends}
 Pre-Depends: snapd
 Suggests: rbd-nbd
 Replaces: lxd,

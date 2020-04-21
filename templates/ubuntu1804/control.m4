@@ -196,12 +196,22 @@ Description: LXD installed as a snap
 
 Package: opennebula-node-lxd
 Architecture: any
-Depends: opennebula-node (= ${source:Version}),
+Depends: opennebula-common (= ${source:Version}),
          kpartx,
          libvncserver1,
          e2fsprogs,
          xfsprogs,
-         lxd (>= 3.0.0) | opennebula-lxd-snap (= ${source:Version})
+         lxd (>= 3.0.0) | opennebula-lxd-snap (= ${source:Version}),
+         qemu-utils,
+         adduser,
+         ruby,
+         vlan,
+         ipset,
+         pciutils,
+         rsync,
+         cron,
+         ruby-sqlite3,
+         ${misc:Depends}
 Suggests: rbd-nbd
 Replaces: lxd (<< 3.0.0),
           lxd-client (<< 3.0.0)
