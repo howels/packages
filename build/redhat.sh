@@ -93,43 +93,12 @@ fi
 
 RUBYGEMS_REQ=''
 if [[ "${BUILD_COMPONENTS}" =~ rubygems ]]; then
-    echo '***** Building Ruby gems' >&2
-    MOCK_DIR_GEMS=$(mktemp -d)
+    echo '***** Downloading Ruby gems' >&2
 
-    # build Ruby gems
-    mock -r "${MOCK_CFG}" --bootstrap-chroot --init
-    mock -r "${MOCK_CFG}" --bootstrap-chroot --install yum
-
-    _MOCK_BIND_MOUNTS="[ \
-('${PACKAGES_DIR}',   '/data/packages'), \
-('${BUILD_DIR_SPKG}', '/data/source'), \
-('${MOCK_DIR_GEMS}',  '/data/build'), \
-]"
-
-    mock -r "${MOCK_CFG}" \
-        --bootstrap-chroot \
-        --enable-network \
-        --enable-plugin=bind_mount \
-        --plugin-option=bind_mount:dirs="${_MOCK_BIND_MOUNTS}" \
-        --chroot \
-        '/data/packages/rubygems/build.sh' \
-            "/data/source/${SOURCE}" \
-            "/data/build" \
-            "${GEMFILE_LOCK}" \
-            "${GEMS_RELEASE}" \
-            "${CONTACT}"
-
-    # generate spec requirements for all Ruby gem packages
-    while IFS= read -r LINE; do
-        _NAME=$(echo "${LINE}" | cut -d' ' -f1)
-        _VERS=$(echo "${LINE}" | cut -d' ' -f2)
-        _REL=$(echo "${LINE}" | cut -d' ' -f3)
-
-        RUBYGEMS_REQ="${RUBYGEMS_REQ}Requires: ${_NAME} = ${_VERS}-${_REL}"$'\n'
-    done < <(rpm -qp "${MOCK_DIR_GEMS}"/opennebula-rubygem-*.rpm --queryformat '%{NAME} %{VERSION} %{RELEASE}\n')
-
-    cp "${MOCK_DIR_GEMS}"/opennebula-rubygem-*.rpm "${BUILD_DIR}"
-    rm -rf "${MOCK_DIR_GEMS}"
+    bash -x "${PACKAGES_DIR}/rubygems/download.sh" \
+        "${BUILD_DIR_SPKG}/${SOURCE}" \
+        "${GEMFILE_LOCK}" \
+        "${BUILD_DIR_SPKG}/opennebula-rubygems-${VERSION}.tar"
 fi
 
 ################################################################################

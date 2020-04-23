@@ -63,6 +63,12 @@ Source7: opennebula-addon-tools-%{version}.tar.gz
 %if %{with_addon_markets}
 Source8: opennebula-addon-markets-%{version}.tar.gz
 %endif
+%if %{with_addon_markets}
+Source8: opennebula-addon-markets-%{version}.tar.gz
+%endif
+%if %{with_rubygems}
+Source10: opennebula-rubygems-%{version}.tar
+%endif
 
 Patch0: proper_path_emulator.diff
 
@@ -95,6 +101,26 @@ BuildRequires: systemd-devel
 BuildRequires: libvncserver-devel
 BuildRequires: gnutls-devel
 BuildRequires: libjpeg-turbo-devel
+
+%if %{with_rubygems}
+BuildRequires: rubygems
+BuildRequires: ruby-devel
+BuildRequires: make
+BuildRequires: gcc
+BuildRequires: sqlite-devel
+BuildRequires: mysql-devel
+BuildRequires: openssl-devel
+BuildRequires: curl-devel
+BuildRequires: rubygem-rake
+BuildRequires: libxml2-devel
+BuildRequires: libxslt-devel
+BuildRequires: patch
+BuildRequires: expat-devel
+BuildRequires: gcc-c++
+BuildRequires: rpm-build
+BuildRequires: augeas-devel
+BuildRequires: postgresql-devel
+%endif
 
 ################################################################################
 # Requires
@@ -202,14 +228,75 @@ Ruby interface for OpenNebula.
 
 %if %{with_rubygems}
 %package rubygems
-Summary: Provides the OpenNebula Ruby gem dependencies
+Summary: Complete Ruby gems dependencies for OpenNebula
 Group: System
-BuildArch: noarch
 Requires: ruby
 Requires: rubygems
+Obsoletes: %{name}-rubygem-activesupport
+Obsoletes: %{name}-rubygem-addressable
+Obsoletes: %{name}-rubygem-amazon-ec2
+Obsoletes: %{name}-rubygem-augeas
+Obsoletes: %{name}-rubygem-aws-eventstream
 Obsoletes: %{name}-rubygem-aws-sdk
+Obsoletes: %{name}-rubygem-aws-sdk-core
 Obsoletes: %{name}-rubygem-aws-sdk-resources
-_RUBYGEMS_REQ_
+Obsoletes: %{name}-rubygem-aws-sigv4
+Obsoletes: %{name}-rubygem-azure
+Obsoletes: %{name}-rubygem-azure-core
+Obsoletes: %{name}-rubygem-builder
+Obsoletes: %{name}-rubygem-chunky-png
+Obsoletes: %{name}-rubygem-concurrent-ruby
+Obsoletes: %{name}-rubygem-configparser
+Obsoletes: %{name}-rubygem-curb
+Obsoletes: %{name}-rubygem-daemons
+Obsoletes: %{name}-rubygem-dalli
+Obsoletes: %{name}-rubygem-eventmachine
+Obsoletes: %{name}-rubygem-faraday
+Obsoletes: %{name}-rubygem-faraday-middleware
+Obsoletes: %{name}-rubygem-ffi
+Obsoletes: %{name}-rubygem-ffi-rzmq
+Obsoletes: %{name}-rubygem-ffi-rzmq-core
+Obsoletes: %{name}-rubygem-hashie
+Obsoletes: %{name}-rubygem-highline
+Obsoletes: %{name}-rubygem-i18n
+Obsoletes: %{name}-rubygem-inflection
+Obsoletes: %{name}-rubygem-ipaddress
+Obsoletes: %{name}-rubygem-jmespath
+Obsoletes: %{name}-rubygem-memcache-client
+Obsoletes: %{name}-rubygem-mime-types
+Obsoletes: %{name}-rubygem-mime-types-data
+Obsoletes: %{name}-rubygem-mini-portile2
+Obsoletes: %{name}-rubygem-minitest
+Obsoletes: %{name}-rubygem-multipart-post
+Obsoletes: %{name}-rubygem-mustermann
+Obsoletes: %{name}-rubygem-mysql2
+Obsoletes: %{name}-rubygem-net-ldap
+Obsoletes: %{name}-rubygem-nokogiri
+Obsoletes: %{name}-rubygem-ox
+Obsoletes: %{name}-rubygem-parse-cron
+Obsoletes: %{name}-rubygem-polyglot
+Obsoletes: %{name}-rubygem-public-suffix
+Obsoletes: %{name}-rubygem-rack
+Obsoletes: %{name}-rubygem-rack-protection
+Obsoletes: %{name}-rubygem-rotp
+Obsoletes: %{name}-rubygem-rqrcode
+Obsoletes: %{name}-rubygem-rqrcode-core
+Obsoletes: %{name}-rubygem-scrub-rb
+Obsoletes: %{name}-rubygem-sequel
+Obsoletes: %{name}-rubygem-sinatra
+Obsoletes: %{name}-rubygem-sqlite3
+Obsoletes: %{name}-rubygem-systemu
+Obsoletes: %{name}-rubygem-thin
+Obsoletes: %{name}-rubygem-thor
+Obsoletes: %{name}-rubygem-thread-safe
+Obsoletes: %{name}-rubygem-tilt
+Obsoletes: %{name}-rubygem-treetop
+Obsoletes: %{name}-rubygem-trollop
+Obsoletes: %{name}-rubygem-tzinfo
+Obsoletes: %{name}-rubygem-uuidtools
+Obsoletes: %{name}-rubygem-xmlrpc
+Obsoletes: %{name}-rubygem-xml-simple
+Obsoletes: %{name}-rubygem-zendesk-api
 
 %description rubygems
 Ruby gems dependencies for OpenNebula.
@@ -473,6 +560,9 @@ OpenNebula provisioning tool
 %if %{with_addon_markets}
 %setup -T -D -a 8
 %endif
+%if %{with_rubygems}
+%setup -T -D -a 10
+%endif
 
 %patch0 -p1
 
@@ -484,6 +574,22 @@ OpenNebula provisioning tool
     tar xzvf %{SOURCE2}
     cp %{SOURCE3} %{SOURCE4} .
 )
+
+%if %{with_rubygems}
+pushd opennebula-rubygems-%{version}
+    GEM_PATH=$PWD/gems-dist/ GEM_HOME=$PWD/gems-dist/ \
+        gem install \
+            --ignore-dependencies \
+            --no-document \
+            --conservative \
+            --install-dir $PWD/gems-dist \
+            --bindir $PWD/gems-dist/bin/ \
+            $(cat manifest)
+
+    # drop build artifacts
+    rm -rf gems-dist/cache gems-dist/gems/*/ext
+popd
+%endif
 
 # Compile OpenNebula
 # scons -j2 mysql=yes new_xmlrpc=yes
@@ -509,6 +615,10 @@ export DESTDIR=%{buildroot}
         cd addon-markets
         ./install.sh
     )
+%endif
+
+%if %{with_rubygems}
+cp -a opennebula-rubygems-%{version}/gems-dist %{buildroot}/usr/share/one/
 %endif
 
 # Init scripts
@@ -1118,6 +1228,8 @@ echo ""
 
 %if %{with_rubygems}
 %files rubygems
+%dir %{_datadir}/one/gems-dist
+%{_datadir}/one/gems-dist/*
 %endif
 
 ################################################################################

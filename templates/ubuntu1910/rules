@@ -41,6 +41,25 @@ endif
 ifneq (,$(filter opennebula-addon-markets, $(shell dh_listpackages)))
 	tar xzvf opennebula-addon-markets-*.tar.gz
 endif
+ifneq (,$(filter opennebula-rubygems, $(shell dh_listpackages)))
+	tar xvf opennebula-rubygems-*.tar
+
+	cd opennebula-rubygems-* && \
+		CPATH=/usr/include/libxml2 \
+		GEM_PATH=$$PWD/gems-dist/ GEM_HOME=$$PWD/gems-dist/ \
+			gem install \
+				--ignore-dependencies \
+				--no-document \
+				--conservative \
+				--install-dir $$PWD/gems-dist \
+				--bindir $$PWD/gems-dist/bin/ \
+				$$(cat manifest)
+
+	# drop build artifacts
+	rm -rf opennebula-rubygems-*/gems-dist/cache \
+		opennebula-rubygems-*/gems-dist/gems/*/ext
+endif
+
 	#XMLRPC_DIR="debian/" debian/build_opennebula.sh
 	./build_opennebula.sh systemd=yes gitversion="$(shell cat debian/gitversion)"
 	(cd src/oca/java/; \
@@ -62,6 +81,9 @@ endif
 ifneq (,$(filter opennebula-addon-markets, $(shell dh_listpackages)))
 	(cd addon-markets && \
 	DESTDIR=../dist ./install.sh)
+endif
+ifneq (,$(filter opennebula-rubygems, $(shell dh_listpackages)))
+	cp -a opennebula-rubygems-*/gems-dist dist/usr/share/one/
 endif
 	dh_auto_install
 ifneq (,$(filter opennebula-common, $(shell dh_listpackages)))
