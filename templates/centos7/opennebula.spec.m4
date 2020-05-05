@@ -649,6 +649,10 @@ install -p -D -m 440 share/pkgs/sudoers/opennebula-server %{buildroot}%{_sysconf
 install -p -D -m 440 share/pkgs/sudoers/opennebula-node   %{buildroot}%{_sysconfdir}/sudoers.d/opennebula-node
 install -p -D -m 440 share/pkgs/sudoers/opennebula-node-firecracker   %{buildroot}%{_sysconfdir}/sudoers.d/opennebula-node-firecracker
 
+# oneadmin ssh config
+%{__mkdir} -p %{buildroot}/usr/share/one/ssh
+install -p -D -m 444 share/pkgs/ssh/config %{buildroot}/usr/share/one/ssh/config
+
 # logrotate
 %{__mkdir} -p %{buildroot}%{_sysconfdir}/logrotate.d
 install -p -D -m 644 share/pkgs/logrotate/opennebula           %{buildroot}%{_sysconfdir}/logrotate.d/opennebula
@@ -800,6 +804,17 @@ if [ $1 = 1 ]; then
     # only on install once again fix directory SELinux type
     # TODO: https://github.com/OpenNebula/one/issues/739
     chcon -t user_home_dir_t %{oneadmin_home} 2>/dev/null || :
+fi
+
+if [ ! -e '%{oneadmin_home}/.ssh/config' ]; then
+    if [ ! -d '%{oneadmin_home}/.ssh' ]; then
+        mkdir -p '%{oneadmin_home}/.ssh'
+        chmod 0700 '%{oneadmin_home}/.ssh'
+        chown '%{oneadmin_uid}:%{oneadmin_gid}' '%{oneadmin_home}/.ssh'
+    fi
+    cp /usr/share/one/ssh/config '%{oneadmin_home}/.ssh/config'
+    chmod 0600 '%{oneadmin_home}/.ssh/config'
+    chown '%{oneadmin_uid}:%{oneadmin_gid}' '%{oneadmin_home}/.ssh/config'
 fi
 
 ################################################################################
@@ -1152,6 +1167,7 @@ echo ""
 
 %files common
 %attr(0440, root, root) %config %{_sysconfdir}/sudoers.d/opennebula
+%attr(0444, root, root) %config /usr/share/one/ssh/config
 %attr(0750, oneadmin, oneadmin) %dir %{_sharedstatedir}/one
 %dir /usr/lib/one
 %dir %{_datadir}/one

@@ -36,6 +36,15 @@ if [ "$1" = "configure" ]; then
     if ! dpkg-statoverride --list $ONEHOME >/dev/null 2>&1; then
         dpkg-statoverride --update --add $ONE_USER $ONE_GROUP 750 $ONEHOME
     fi
+
+    if [ ! -e "${ONEHOME}/.ssh/config" ]; then
+        if [ ! -d "${ONEHOME}/.ssh" ]; then
+            mkdir -p "${ONEHOME}/.ssh"
+            dpkg-statoverride --update --add $ONE_USER $ONE_GROUP 700 "${ONEHOME}/.ssh"
+        fi
+        cp /usr/share/one/ssh/config "${ONEHOME}/.ssh/config"
+        dpkg-statoverride --update --add $ONE_USER $ONE_GROUP 600 "${ONEHOME}/.ssh/config"
+    fi
 fi
 
 #DEBHELPER#
