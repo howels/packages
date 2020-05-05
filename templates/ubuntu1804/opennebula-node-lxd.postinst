@@ -19,6 +19,10 @@ if [ "$1" = "configure" ]; then
             ln -s /snap/bin/lxc /usr/bin/lxc
         fi
 
+        if ! [ -f /usr/bin/lxd ]; then
+            ln -s /snap/bin/lxd /usr/bin/lxd
+        fi
+
         PRESEED_SNAP=$(cat <<EOF
        security.idmap.base: "100000"
        security.idmap.isolated: "true"

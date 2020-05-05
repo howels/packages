@@ -16,6 +16,10 @@ if [ "$1" = "configure" ]; then
         if ! [ -f /usr/bin/lxc ]; then
             ln -s /snap/bin/lxc /usr/bin/lxc
         fi
+
+        if ! [ -f /usr/bin/lxd ]; then
+            ln -s /snap/bin/lxd /usr/bin/lxd
+        fi
     fi
 
     ###
