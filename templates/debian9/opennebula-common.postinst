@@ -42,7 +42,7 @@ if [ "$1" = "configure" ]; then
             mkdir -p "${ONEHOME}/.ssh"
             dpkg-statoverride --update --add $ONE_USER $ONE_GROUP 700 "${ONEHOME}/.ssh"
         fi
-        cp /usr/share/one/ssh/config "${ONEHOME}/.ssh/config"
+        cp /usr/share/one/ssh/config-pre7.6 "${ONEHOME}/.ssh/config"
         dpkg-statoverride --update --add $ONE_USER $ONE_GROUP 600 "${ONEHOME}/.ssh/config"
     fi
 fi

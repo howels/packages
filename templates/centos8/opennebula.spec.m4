@@ -734,7 +734,7 @@ install -p -D -m 440 share/pkgs/sudoers/opennebula-node-firecracker   %{buildroo
 
 # oneadmin ssh config
 %{__mkdir} -p %{buildroot}/usr/share/one/ssh
-install -p -D -m 444 share/pkgs/ssh/config-7.6+ %{buildroot}/usr/share/one/ssh/config
+install -p -D -m 444 share/pkgs/ssh/config* %{buildroot}/usr/share/one/ssh/
 
 # logrotate
 %{__mkdir} -p %{buildroot}%{_sysconfdir}/logrotate.d
@@ -1270,13 +1270,15 @@ echo ""
 
 %files common
 %attr(0440, root, root) %config %{_sysconfdir}/sudoers.d/opennebula
-%attr(0444, root, root) %config /usr/share/one/ssh/config
+%attr(0444, root, root) /usr/share/one/ssh/config*
 %attr(0750, oneadmin, oneadmin) %dir %{_sharedstatedir}/one
 %dir /usr/lib/one
 %dir %{_datadir}/one
+%dir /usr/share/one/ssh
 #TODO: /usr/share/doc ???
 %dir /usr/share/docs/one
 /usr/share/docs/one/*
+/usr/share/one/ssh/*
 
 ################################################################################
 # node-kvm - files
