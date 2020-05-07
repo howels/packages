@@ -15,9 +15,10 @@ ssh_key_configure() {
     fi
     if ! [ -f "$ONEHOME/.ssh/id_rsa" ]; then
         su $ONE_USER -c "ssh-keygen -N '' -t rsa -f $ONEHOME/.ssh/id_rsa"
-    fi
-    if ! [ -f "$ONEHOME/.ssh/authorized_keys" ]; then
-        cp -p "$ONEHOME/.ssh/id_rsa.pub" "$ONEHOME/.ssh/authorized_keys"
+        if ! [ -f "$ONEHOME/.ssh/authorized_keys" ]; then
+            cp -p "$ONEHOME/.ssh/id_rsa.pub" "$ONEHOME/.ssh/authorized_keys"
+            chmod 600 "$ONEHOME/.ssh/authorized_keys"
+        fi
     fi
 }
 

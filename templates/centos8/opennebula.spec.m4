@@ -942,8 +942,10 @@ if [ $1 = 1 ]; then
 
     if [ ! -f "%{oneadmin_home}/.ssh/id_rsa" ]; then
         su oneadmin -c "ssh-keygen -N '' -t rsa -f %{oneadmin_home}/.ssh/id_rsa"
-        cp -p %{oneadmin_home}/.ssh/id_rsa.pub %{oneadmin_home}/.ssh/authorized_keys
-        /bin/chmod 600 %{oneadmin_home}/.ssh/authorized_keys
+        if ! [ -f "%{oneadmin_home}/.ssh/authorized_keys" ]; then
+            cp -p %{oneadmin_home}/.ssh/id_rsa.pub %{oneadmin_home}/.ssh/authorized_keys
+            /bin/chmod 600 %{oneadmin_home}/.ssh/authorized_keys
+        fi
     fi
 fi
 systemctl daemon-reload 2>/dev/null || :
