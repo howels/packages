@@ -734,7 +734,7 @@ install -p -D -m 440 share/pkgs/sudoers/opennebula-node-firecracker   %{buildroo
 
 # oneadmin ssh config
 %{__mkdir} -p %{buildroot}/usr/share/one/ssh
-install -p -D -m 444 share/pkgs/ssh/config* %{buildroot}/usr/share/one/ssh/
+install -p -D -m 644 share/pkgs/ssh/config* %{buildroot}/usr/share/one/ssh/
 
 # logrotate
 %{__mkdir} -p %{buildroot}%{_sysconfdir}/logrotate.d
@@ -940,7 +940,7 @@ if [ $1 = 1 ]; then
         /bin/chmod 600 %{oneadmin_home}/.one/one_auth
     fi
 
-    if [ ! -d "%{oneadmin_home}/.ssh" ]; then
+    if [ ! -f "%{oneadmin_home}/.ssh/id_rsa" ]; then
         su oneadmin -c "ssh-keygen -N '' -t rsa -f %{oneadmin_home}/.ssh/id_rsa"
         cp -p %{oneadmin_home}/.ssh/id_rsa.pub %{oneadmin_home}/.ssh/authorized_keys
         /bin/chmod 600 %{oneadmin_home}/.ssh/authorized_keys

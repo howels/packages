@@ -45,8 +45,8 @@ if [ "$1" = "configure" ]; then
             chown "$ONE_USER:$ONE_GROUP" "${ONEHOME}/.ssh"
         fi
         cp /usr/share/one/ssh/config "${ONEHOME}/.ssh/config"
-        chmod 0600 "${ONEHOME}/.ssh"
-        chown "$ONE_USER:$ONE_GROUP" "${ONEHOME}/.ssh"
+        chmod 0600 "${ONEHOME}/.ssh/config"
+        chown "$ONE_USER:$ONE_GROUP" "${ONEHOME}/.ssh/config"
     fi
 fi
 
