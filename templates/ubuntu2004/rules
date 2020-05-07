@@ -90,7 +90,7 @@ endif
 ifneq (,$(filter opennebula-common, $(shell dh_listpackages)))
 	dh_install -p opennebula-common share/pkgs/sudoers/${DIR_SUDOERS}/opennebula \
 		/etc/sudoers.d
-	dh_install -p opennebula-common share/pkgs/ssh/config* \
+	dh_install -p opennebula-common share/pkgs/ssh/* \
 		/usr/share/one/ssh
 endif
 ifneq (,$(filter opennebula, $(shell dh_listpackages)))
@@ -206,7 +206,6 @@ ifneq (,$(filter opennebula, $(shell dh_listpackages)))
 endif
 ifneq (,$(filter opennebula-common, $(shell dh_listpackages)))
 	chmod 0440 debian/opennebula-common/etc/sudoers.d/opennebula
-	chmod 0444 debian/opennebula-common/usr/share/one/ssh/config*
 endif
 ifneq (,$(filter opennebula-node, $(shell dh_listpackages)))
 	chmod 0440 debian/opennebula-node/etc/sudoers.d/opennebula-node

@@ -904,7 +904,8 @@ if [ $1 = 1 ]; then
     chcon -t user_home_dir_t %{oneadmin_home} 2>/dev/null || :
 fi
 
-if [ ! -e '%{oneadmin_home}/.ssh/config' ]; then
+# install ~oneadmin/.ssh/config if not present on a fresh install only
+if [ ! -e '%{oneadmin_home}/.ssh/config' ] && [ "$1" = 1 ]; then
     if [ ! -d '%{oneadmin_home}/.ssh' ]; then
         mkdir -p '%{oneadmin_home}/.ssh'
         chmod 0700 '%{oneadmin_home}/.ssh'
@@ -1270,7 +1271,6 @@ echo ""
 
 %files common
 %attr(0440, root, root) %config %{_sysconfdir}/sudoers.d/opennebula
-%attr(0444, root, root) /usr/share/one/ssh/config*
 %attr(0750, oneadmin, oneadmin) %dir %{_sharedstatedir}/one
 %dir /usr/lib/one
 %dir %{_datadir}/one
