@@ -902,18 +902,18 @@ if [ $1 = 1 ]; then
     # only on install once again fix directory SELinux type
     # TODO: https://github.com/OpenNebula/one/issues/739
     chcon -t user_home_dir_t %{oneadmin_home} 2>/dev/null || :
-fi
 
-# install ~oneadmin/.ssh/config if not present on a fresh install only
-if [ ! -e '%{oneadmin_home}/.ssh/config' ] && [ "$1" = 1 ]; then
-    if [ ! -d '%{oneadmin_home}/.ssh' ]; then
-        mkdir -p '%{oneadmin_home}/.ssh'
-        chmod 0700 '%{oneadmin_home}/.ssh'
-        chown '%{oneadmin_uid}:%{oneadmin_gid}' '%{oneadmin_home}/.ssh'
+    # install ~oneadmin/.ssh/config if not present on a fresh install only
+    if [ ! -e '%{oneadmin_home}/.ssh/config' ]; then
+        if [ ! -d '%{oneadmin_home}/.ssh' ]; then
+            mkdir -p '%{oneadmin_home}/.ssh'
+            chmod 0700 '%{oneadmin_home}/.ssh'
+            chown '%{oneadmin_uid}:%{oneadmin_gid}' '%{oneadmin_home}/.ssh'
+        fi
+        cp /usr/share/one/ssh/config '%{oneadmin_home}/.ssh/config'
+        chmod 0600 '%{oneadmin_home}/.ssh/config'
+        chown '%{oneadmin_uid}:%{oneadmin_gid}' '%{oneadmin_home}/.ssh/config'
     fi
-    cp /usr/share/one/ssh/config '%{oneadmin_home}/.ssh/config'
-    chmod 0600 '%{oneadmin_home}/.ssh/config'
-    chown '%{oneadmin_uid}:%{oneadmin_gid}' '%{oneadmin_home}/.ssh/config'
 fi
 
 ################################################################################
